@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 35 38% 93%;       /* warm sand #f4ede3 */
+    --foreground: 24 50% 13%;       /* dark brown #2e1905 */
+    --card: 38 35% 97%;             /* cream white #faf8f3 */
+    --card-foreground: 24 50% 13%;
+    --popover: 38 35% 97%;
+    --popover-foreground: 24 50% 13%;
+    --primary: 25 75% 32%;          /* saddle brown #8f4415 */
+    --primary-foreground: 38 35% 97%;
+    --secondary: 35 28% 88%;        /* light tan #e6dece */
+    --secondary-foreground: 24 35% 25%;
+    --muted: 35 22% 91%;            /* very light tan #ece6dd */
+    --muted-foreground: 28 18% 48%; /* warm gray-brown #856f5c */
+    --accent: 35 22% 88%;           /* tan hover #e3dcd3 */
+    --accent-foreground: 24 50% 13%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 35 28% 78%;           /* tan border #d2c6b0 */
+    --input: 35 28% 85%;
+    --ring: 25 75% 32%;
+    --radius: 1.25rem;
+
+    /* Warm shadow — uses a brown-tinted base instead of cold gray */
+    --shadow-card: 0 1px 4px hsl(25 50% 15% / 0.06), 0 6px 24px hsl(25 50% 15% / 0.07);
+    --shadow-sm:   0 1px 3px hsl(25 50% 15% / 0.08);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    /* Subtle warm radial gradient — removes the flat, painted-wall feel */
+    background-image: radial-gradient(
+      ellipse at 30% 20%,
+      hsl(35 45% 94%) 0%,
+      hsl(35 30% 90%) 100%
+    );
+    background-attachment: fixed;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+}
+
+@layer utilities {
+  /* Inner cards sit on the main-content panel — lighten their shadow so they
+     float gently rather than competing with the panel's own shadow. */
+  .card-inner {
+    box-shadow: var(--shadow-sm) !important;
+  }
+
+  /* Metric accent classes — warm brown gradient, on-theme with the sand palette.
+     Dark brown = on target / strong. Light caramel = below target / concerning.
+     Avoids jarring green / red on performance text. Charts can still use full color. */
+  .text-positive { color: #6b3010; }  /* deep mahogany — on target */
+  .text-warning  { color: #9a5f2d; }  /* saddle brown — slight concern */
+  .text-negative { color: #b88b64; }  /* warm caramel — below target (understated) */
+  .text-accent   { color: #7c3b10; }  /* russet brown — primary accent */
+}
