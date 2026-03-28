@@ -1,0 +1,31 @@
+name: Telegram Evening Cron
+
+on:
+  schedule:
+    - cron: "30 3 * * *"   # 8:30 PM PDT (UTC-7) — survey + food reminder + agents
+  workflow_dispatch:        # allow manual trigger from GitHub UI
+
+jobs:
+  cron:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: scripts/requirements.txt
+
+      - name: Install dependencies
+        run: pip install requests python-dotenv
+
+      - name: Run Telegram cron
+        working-directory: scripts
+        env:
+          NEXT_PUBLIC_APP_URL:   ${{ secrets.NEXT_PUBLIC_APP_URL }}
+          SYNC_SECRET:           ${{ secrets.SYNC_SECRET }}
+          TELEGRAM_BOT_TOKEN:    ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:      ${{ secrets.TELEGRAM_CHAT_ID }}
+          ANTHROPIC_API_KEY:     ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python3 telegram_checkin_cron.py
