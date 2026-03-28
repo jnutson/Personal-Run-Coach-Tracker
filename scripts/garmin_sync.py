@@ -79,6 +79,23 @@ def with_retry(fn, *args, label: str = "", **kwargs):
 # ── Garmin helpers ────────────────────────────────────────────────────────────
 
 def garmin_login() -> Garmin:
+    # In CI (GitHub Actions), use a pre-generated OAuth token to avoid
+    # Garmin's cloud-IP rate limit on username/password logins.
+    oauth_token = os.environ.get("GARMIN_OAUTH_TOKEN")
+    if oauth_token:
+        import base64, json, pathlib, tempfile
+        log.info("Restoring Garmin OAuth token from environment…")
+        token_data = json.loads(base64.b64decode(oauth_token))
+        token_dir = pathlib.Path(tempfile.mkdtemp())
+        for name, content in token_data.items():
+            (token_dir / name).write_text(content)
+        import garth
+        garth.load(str(token_dir))
+        client = Garmin(GARMIN_EMAIL, GARMIN_PASSWORD)
+        client.garth = garth
+        log.info("Token restored.")
+        return client
+
     log.info("Logging in to Garmin Connect…")
     client = Garmin(GARMIN_EMAIL, GARMIN_PASSWORD)
     client.login()

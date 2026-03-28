@@ -27,6 +27,7 @@ jobs:
         env:
           GARMIN_EMAIL:          ${{ secrets.GARMIN_EMAIL }}
           GARMIN_PASSWORD:       ${{ secrets.GARMIN_PASSWORD }}
+          GARMIN_OAUTH_TOKEN:    ${{ secrets.GARMIN_OAUTH_TOKEN }}
           NEXT_PUBLIC_APP_URL:   ${{ secrets.NEXT_PUBLIC_APP_URL }}
           SYNC_SECRET:           ${{ secrets.SYNC_SECRET }}
           TELEGRAM_BOT_TOKEN:    ${{ secrets.TELEGRAM_BOT_TOKEN }}
