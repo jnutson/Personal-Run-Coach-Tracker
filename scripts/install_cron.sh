@@ -9,8 +9,8 @@
 # Format: "MINUTE HOUR" — e.g. "30 19" = 7:30 PM
 # ─────────────────────────────────────────────────────────────────────────────
 
-SCRIPTS_DIR="/Users/jnutson/Desktop/Personal Tracker/scripts"
-PYTHON="/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/bin/python3"
+SCRIPTS_DIR="$(cd "$(dirname "$0")" && pwd)"
+PYTHON="${PYTHON:-$(which python3)}"
 
 # ── Schedule ──────────────────────────────────────────────────────────────────
 MORNING_GARMIN="0 9"      # 9:00 AM  — backfill previous night's sleep
