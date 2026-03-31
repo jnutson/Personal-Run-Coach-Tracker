@@ -78,28 +78,56 @@ def with_retry(fn, *args, label: str = "", **kwargs):
 
 # ── Garmin helpers ────────────────────────────────────────────────────────────
 
+class GarminRateLimitError(Exception):
+    """Raised on Garmin 429 — should not be retried."""
+
+
 def garmin_login() -> Garmin:
-    # In CI (GitHub Actions), use a pre-generated OAuth token to avoid
-    # Garmin's cloud-IP rate limit on username/password logins.
+    import garth, pathlib
+
+    # 1. CI: restore token from GARMIN_OAUTH_TOKEN env var (base64-encoded)
     oauth_token = os.environ.get("GARMIN_OAUTH_TOKEN")
     if oauth_token:
-        import base64, json, pathlib, tempfile
+        import base64, json, tempfile
         log.info("Restoring Garmin OAuth token from environment…")
         token_data = json.loads(base64.b64decode(oauth_token))
         token_dir = pathlib.Path(tempfile.mkdtemp())
         for name, content in token_data.items():
             (token_dir / name).write_text(content)
-        import garth
         garth.load(str(token_dir))
         client = Garmin(GARMIN_EMAIL, GARMIN_PASSWORD)
         client.garth = garth
-        log.info("Token restored.")
+        log.info("Token restored from environment.")
         return client
 
-    log.info("Logging in to Garmin Connect…")
-    client = Garmin(GARMIN_EMAIL, GARMIN_PASSWORD)
-    client.login()
-    log.info("Login successful.")
+    # 2. Local: reuse cached token from ~/.garth to avoid repeated logins
+    token_dir = pathlib.Path.home() / ".garth"
+    if token_dir.exists() and any(token_dir.iterdir()):
+        try:
+            log.info("Loading cached Garmin token from ~/.garth…")
+            garth.load(str(token_dir))
+            client = Garmin(GARMIN_EMAIL, GARMIN_PASSWORD)
+            client.garth = garth
+            log.info("Cached token loaded.")
+            return client
+        except Exception as e:
+            log.warning(f"Cached token invalid, will re-authenticate: {e}")
+
+    # 3. Fall back to username/password login — save token for next run
+    log.info("Logging in to Garmin Connect with username/password…")
+    try:
+        client = Garmin(GARMIN_EMAIL, GARMIN_PASSWORD)
+        client.login()
+    except Exception as e:
+        if "429" in str(e):
+            raise GarminRateLimitError(
+                "Garmin rate limit hit (429). No retries attempted. "
+                "Wait a few hours before running again."
+            ) from e
+        raise
+    token_dir.mkdir(parents=True, exist_ok=True)
+    garth.save(str(token_dir))
+    log.info(f"Login successful. Token cached to {token_dir}")
     return client
 
 
@@ -210,7 +238,14 @@ def main():
     args = parser.parse_args()
 
     try:
-        client = with_retry(garmin_login, label="Garmin login")
+        # Don't retry login — repeated attempts trigger Garmin's rate limit.
+        # GarminRateLimitError exits immediately; other login errors retry once.
+        try:
+            client = garmin_login()
+        except GarminRateLimitError as e:
+            log.error(str(e))
+            send_alert(f"⚠️ *Garmin rate limit hit*\n\n{e}\n\nNo retries attempted.")
+            sys.exit(1)
 
         days = date_range(args.days)
         log.info(f"Syncing {args.days} days: {days[0]} → {days[-1]}")
