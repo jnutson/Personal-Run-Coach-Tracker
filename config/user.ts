@@ -191,8 +191,22 @@ export const health = {
   },
 } as const;
 
+// ── Feature flags ─────────────────────────────────────────────────────────────
+// Toggle optional modules on/off. The page files stay in the repo so forkers
+// can enable them — they just won't appear in the nav when set to false.
+
+export const features = {
+  /**
+   * Diet / nutrition tracking (Cronometer sync, macro & micronutrient pages).
+   * Requires CRONOMETER_USER + CRONOMETER_PASS in .env.local.
+   * Set to true to show the Diet link in the sidebar.
+   */
+  diet: false,
+} as const;
+
 // ── Types (derived — do not edit) ─────────────────────────────────────────────
 
-export type BrandingConfig = typeof branding;
-export type MarathonConfig = typeof marathon;
-export type HealthConfig   = typeof health;
+export type BrandingConfig  = typeof branding;
+export type MarathonConfig  = typeof marathon;
+export type HealthConfig    = typeof health;
+export type FeaturesConfig  = typeof features;

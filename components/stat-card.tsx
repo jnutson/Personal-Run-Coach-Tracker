@@ -13,7 +13,7 @@ interface StatCardProps {
 
 export function StatCard({ title, value, sub, valueClass, hint }: StatCardProps) {
   return (
-    <Card>
+    <Card className="card-lift">
       <CardHeader>
         <CardTitle className="flex items-center gap-1.5">
           {title}

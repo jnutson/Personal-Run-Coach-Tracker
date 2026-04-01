@@ -12,16 +12,16 @@ import {
 } from "lucide-react";
 import { AcornIcon } from "@/components/acorn-icon";
 import { cn } from "@/lib/utils";
-import { branding } from "@/config/user";
+import { branding, features } from "@/config/user";
 
 const nav = [
-  { href: "/home",     label: "Home",          icon: Home    },
-  { href: "/training", label: "Training",      icon: Zap     },
-  { href: "/marathon", label: "Marathon",      icon: Medal   },
-  { href: "/sleep",    label: "Sleep & Health",icon: Waves   },
-  { href: "/diet",     label: "Diet",          icon: Leaf    },
-  { href: "/goals",    label: "Goals",         icon: Sprout  },
-];
+  { href: "/home",     label: "Home",          icon: Home,   enabled: true           },
+  { href: "/training", label: "Training",      icon: Zap,    enabled: true           },
+  { href: "/marathon", label: "Marathon",      icon: Medal,  enabled: true           },
+  { href: "/sleep",    label: "Sleep & Health",icon: Waves,  enabled: true           },
+  { href: "/diet",     label: "Diet",          icon: Leaf,   enabled: features.diet  },
+  { href: "/goals",    label: "Goals",         icon: Sprout, enabled: true           },
+].filter((item) => item.enabled);
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -63,6 +63,50 @@ export function Sidebar() {
           );
         })}
       </nav>
+
+      {/* Beach illustration — subtle surf & wave decoration */}
+      <div className="px-3 pb-1 pointer-events-none select-none" aria-hidden="true">
+        <svg
+          viewBox="0 0 192 52"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-full text-primary opacity-[0.11]"
+        >
+          {/* Surfboard body */}
+          <path
+            d="M148 6 Q152 2 156 6 L158 34 Q156 41 152 42 Q148 41 146 34 Z"
+            fill="currentColor"
+          />
+          {/* Surfboard fin */}
+          <path d="M152 40 L149 48 L152 46 L155 48 Z" fill="currentColor" />
+          {/* Surfboard center stripe */}
+          <line x1="152" y1="8" x2="152" y2="39" stroke="hsl(38 35% 97%)" strokeWidth="1.2" strokeLinecap="round" />
+          {/* Surfboard nose detail */}
+          <circle cx="152" cy="7" r="1.5" fill="hsl(38 35% 97%)" opacity="0.6" />
+
+          {/* Ocean waves */}
+          <path
+            d="M0 36 Q12 30 24 36 Q36 42 48 36 Q60 30 72 36 Q84 42 96 36 Q108 30 120 36 Q132 42 144 36 Q156 30 168 36 Q180 42 192 36"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+          />
+          <path
+            d="M0 43 Q12 37 24 43 Q36 49 48 43 Q60 37 72 43 Q84 49 96 43 Q108 37 120 43 Q132 49 144 43 Q156 37 168 43 Q180 49 192 43"
+            stroke="currentColor"
+            strokeWidth="1.2"
+            strokeLinecap="round"
+            opacity="0.55"
+          />
+          <path
+            d="M0 49 Q16 44 32 49 Q48 54 64 49 Q80 44 96 49 Q112 54 128 49 Q144 44 160 49 Q176 54 192 49"
+            stroke="currentColor"
+            strokeWidth="0.8"
+            strokeLinecap="round"
+            opacity="0.3"
+          />
+        </svg>
+      </div>
 
       {/* Footer */}
       <div className="px-5 py-4 border-t border-border/50">

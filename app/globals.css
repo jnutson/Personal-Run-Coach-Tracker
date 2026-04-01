@@ -25,9 +25,14 @@
     --ring: 25 75% 32%;
     --radius: 1.25rem;
 
+    /* Extended tan palette — two extra shades for depth and decoration */
+    --sand-foam:  42 60% 98%;   /* #fdfaf5 — near-white foam highlight */
+    --driftwood:  30 28% 68%;   /* #b5987e — warm mid-tan, decorative accents */
+
     /* Warm shadow — uses a brown-tinted base instead of cold gray */
     --shadow-card: 0 1px 4px hsl(25 50% 15% / 0.06), 0 6px 24px hsl(25 50% 15% / 0.07);
     --shadow-sm:   0 1px 3px hsl(25 50% 15% / 0.08);
+    --shadow-lift: 0 4px 16px hsl(25 50% 15% / 0.11), 0 1px 4px hsl(25 50% 15% / 0.07);
   }
 }
 
@@ -39,12 +44,11 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
-    /* Subtle warm radial gradient — removes the flat, painted-wall feel */
-    background-image: radial-gradient(
-      ellipse at 30% 20%,
-      hsl(35 45% 94%) 0%,
-      hsl(35 30% 90%) 100%
-    );
+    /* Layered warm gradient — sand foam at top, driftwood warmth at bottom */
+    background-image:
+      radial-gradient(ellipse at 15% 10%, hsl(42 60% 97%) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 90%, hsl(30 28% 86%) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, hsl(35 38% 92%) 0%, hsl(35 28% 88%) 100%);
     background-attachment: fixed;
   }
 
@@ -71,6 +75,23 @@
   .card-inner {
     box-shadow: var(--shadow-sm) !important;
   }
+
+  /* Lift on hover — apply to interactive stat cards */
+  .card-lift {
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .card-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lift) !important;
+  }
+
+  /* Sand foam fill — lightest tan, used for inner highlights */
+  .bg-sand-foam { background-color: hsl(var(--sand-foam)); }
+
+  /* Driftwood — warm mid-tan for decorative lines and accents */
+  .text-driftwood  { color: hsl(var(--driftwood)); }
+  .border-driftwood { border-color: hsl(var(--driftwood)); }
+  .bg-driftwood    { background-color: hsl(var(--driftwood)); }
 
   /* Metric accent classes — warm brown gradient, on-theme with the sand palette.
      Dark brown = on target / strong. Light caramel = below target / concerning.
