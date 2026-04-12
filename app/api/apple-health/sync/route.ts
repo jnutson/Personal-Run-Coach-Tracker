@@ -101,7 +101,9 @@ function indexByDate(data: HaeMetricEntry[]): Map<string, HaeMetricEntry> {
 
 export async function POST(req: NextRequest) {
   const auth = req.headers.get("authorization");
-  if (auth !== `Bearer ${process.env.SYNC_SECRET}`) {
+  const querySecret = req.nextUrl.searchParams.get("secret");
+  const validSecret = process.env.SYNC_SECRET;
+  if (auth !== `Bearer ${validSecret}` && querySecret !== validSecret) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
