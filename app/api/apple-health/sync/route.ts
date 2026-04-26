@@ -180,19 +180,29 @@ export async function POST(req: NextRequest) {
     };
   });
 
+  console.log("[apple-health] metric names:", metrics.map(m => m.name));
+  console.log("[apple-health] daily rows:", JSON.stringify(dailyRows));
+  console.log("[apple-health] activity rows:", JSON.stringify(activityRows));
+
   const db = createServiceClient();
   const errors: string[] = [];
 
   if (dailyRows.length > 0) {
     const { error } = await (db.from("garmin_daily") as any)
       .upsert(dailyRows, { onConflict: "date" });
-    if (error) errors.push(`daily: ${error.message}`);
+    if (error) {
+      console.error("[apple-health] garmin_daily error:", JSON.stringify(error));
+      errors.push(`daily: ${error.message}`);
+    }
   }
 
   if (activityRows.length > 0) {
     const { error } = await (db.from("garmin_activities") as any)
       .upsert(activityRows, { onConflict: "garmin_id" });
-    if (error) errors.push(`activities: ${error.message}`);
+    if (error) {
+      console.error("[apple-health] garmin_activities error:", JSON.stringify(error));
+      errors.push(`activities: ${error.message}`);
+    }
   }
 
   if (errors.length > 0) {
